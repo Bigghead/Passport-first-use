@@ -4,9 +4,16 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+var mongoose = require('mongoose');
+var passport = require('passport');
+var localStrategy = require('passport-local');
+var passpotLocalMongoose = require('passport-local-mongoose');
 
-var index = require('./routes/index');
-var users = require('./routes/users');
+//setup DB
+mongoose.connect('mongodb://localhost/auth_demo_app');
+
+//User Model
+var User = require('./models/user.js');
 
 var app = express();
 
