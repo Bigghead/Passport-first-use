@@ -46,36 +46,43 @@ passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
 
 
+
 //=============ROUTES=============
 
 app.get('/', function(req, res){
   res.render('home');
 });
 
-
 app.get('/secret', function(req, res){
   res.render('secret');
 });
 
-// // catch 404 and forward to error handler
-// app.use(function(req, res, next) {
-//   var err = new Error('Not Found');
-//   err.status = 404;
-//   next(err);
-// });
-//
-// // error handler
-// app.use(function(err, req, res, next) {
-//   // set locals, only providing error in development
-//   res.locals.message = err.message;
-//   res.locals.error = req.app.get('env') === 'development' ? err : {};
-//
-//   // render the error page
-//   res.status(err.status || 500);
-//   res.render('error');
-// });
-//
-// module.exports = app;
+
+//=============AUTHENTICATION ROUTES======
+
+app.get('/register', function(req, res){
+  res.render('register');
+});
+
+//handle user registration
+app.post('/register', function(req, res){
+  var username = req.body.username;
+  var password = req.body.password;
+
+  User.register(new User({username: username}), password, function(err, user){
+    if(err){
+      //if err, go back to registration form
+      console.log(err);
+      res.render('register');
+    } else {
+      //make a new user
+      passport.authenticate('local')(req,res, function(){
+        res.redirect('/secret');
+      });
+    }
+  });
+});
+
 
 app.listen('4000', function(){
   console.log('Passport Test Running!');
