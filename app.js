@@ -1,13 +1,14 @@
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var mongoose = require('mongoose');
-var passport = require('passport');
-var localStrategy = require('passport-local');
-var passpotLocalMongoose = require('passport-local-mongoose');
+var express  = require('express'),
+    path     = require('path'),
+    favicon  = require('serve-favicon'),
+    logger   = require('morgan'),
+    bodyParser = require('body-parser'),
+    cookieParser = require('cookie-parser'),
+    mongoose = require('mongoose'),
+    passport = require('passport'),
+    localStrategy = require('passport-local'),
+    passpotLocalMongoose = require('passport-local-mongoose'),
+    session = require('express-session');
 
 //setup DB
 mongoose.connect('mongodb://localhost/auth_demo_app');
@@ -29,8 +30,20 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-// app.use('/', index);
-// app.use('/users', users);
+//tell Express to use Passport
+app.use(passport.initialize());
+app.use(passport.session());
+
+//use express-session
+app.use(session({
+  secret: 'This is Sparta!',
+  resave: false,
+  saveUninitialized: false
+}));
+
+// use static serialize and deserialize of model for passport session support
+passport.serializeUser(User.serializeUser());
+passport.deserializeUser(User.deserializeUser());
 
 
 //=============ROUTES=============
