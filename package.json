@@ -11,7 +11,24 @@
     "debug": "~2.2.0",
     "ejs": "~2.5.2",
     "express": "~4.14.0",
+    "express-session": "^1.14.2",
+    "mongoose": "^4.7.1",
     "morgan": "~1.7.0",
+    "passport": "^0.3.2",
+    "passport-local": "^1.0.0",
+    "passport-local-mongoose": "^4.0.0",
     "serve-favicon": "~2.3.0"
-  }
+  },
+  "description": "",
+  "main": "app.js",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Bigghead/Passport-first-use.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Bigghead/Passport-first-use/issues"
+  },
+  "homepage": "https://github.com/Bigghead/Passport-first-use#readme"
 }
