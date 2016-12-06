@@ -7,9 +7,10 @@ var express  = require('express'),
     mongoose = require('mongoose'),
     passport = require('passport'),
     localStrategy = require('passport-local'),
-    passpotLocalMongoose = require('passport-local-mongoose'),
-    session = require('express-session');
+    passportLocalMongoose = require('passport-local-mongoose'),
+    Session = require('express-session');
 
+mongoose.Promise = global.Promise;
 //setup DB
 mongoose.connect('mongodb://localhost/auth_demo_app');
 
@@ -30,6 +31,13 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+//use express-session
+app.use(Session({
+  secret: 'This is Sparta!',
+  resave: false,
+  saveUninitialized: false
+}));
+
 //tell Express to use Passport
 app.use(passport.initialize());
 app.use(passport.session());
@@ -37,12 +45,6 @@ app.use(passport.session());
 //checks for user LogIn later
 passport.use(new localStrategy(User.authenticate()));
 
-//use express-session
-app.use(session({
-  secret: 'This is Sparta!',
-  resave: false,
-  saveUninitialized: false
-}));
 
 // use static serialize and deserialize of model for passport session support
 passport.serializeUser(User.serializeUser());
@@ -56,7 +58,9 @@ app.get('/', function(req, res){
   res.render('home');
 });
 
-app.get('/secret', function(req, res){
+
+//check if user is logged in or not
+app.get('/secret', isLoggedIn, function(req, res){
   res.render('secret');
 });
 
@@ -77,12 +81,11 @@ app.post('/register', function(req, res){
       //if err, go back to registration form
       console.log(err);
       res.render('register');
-    } else {
+    }
       //make a new user
       passport.authenticate('local')(req,res, function(){
         res.redirect('/secret');
       });
-    }
   });
 });
 
@@ -100,12 +103,27 @@ app.get('/login', function(req, res){
 //
 // });
 
-app.post('/login', passport.authenticate('local', {
-  successRedirect: '/secret',
-  failureRedirect: '/login'
-}) ,function(req, res){
+app.post('/login',
+  passport.authenticate('local', { successRedirect: '/secret',
+                                   failureRedirect: '/login' }));
 
+
+//===========LOGOUT=========
+app.get('/logout', function(req, res){
+  req.logout();
+  res.redirect('/');
 });
+
+
+//=======Check if user is logged in function=====
+function isLoggedIn(req, res, next){
+  console.log(req.isAuthenticated());
+  if(req.isAuthenticated()){
+    return next();
+} else {
+  res.redirect('/login');
+ }
+}
 
 app.listen('4000', function(){
   console.log('Passport Test Running!');
