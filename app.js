@@ -34,6 +34,9 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(passport.initialize());
 app.use(passport.session());
 
+//checks for user LogIn later
+passport.use(new localStrategy(User.authenticate()));
+
 //use express-session
 app.use(session({
   secret: 'This is Sparta!',
@@ -83,6 +86,26 @@ app.post('/register', function(req, res){
   });
 });
 
+
+//=====LOGIN ROUTES========
+app.get('/login', function(req, res){
+  res.render('login');
+});
+
+//Login Post
+// app.post('url', passport.authenticate('local', {
+//   successRedirect: url,
+//   failurerediect: otherUrl
+// }), function(req, res){
+//
+// });
+
+app.post('/login', passport.authenticate('local', {
+  successRedirect: '/secret',
+  failureRedirect: '/login'
+}) ,function(req, res){
+
+});
 
 app.listen('4000', function(){
   console.log('Passport Test Running!');
